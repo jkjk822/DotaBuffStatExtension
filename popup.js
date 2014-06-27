@@ -14,7 +14,8 @@ function fetchStats(webpage){
 //Retrieve data from dotabuff page
 function reqListener(data){
   var response = $('<stats />').html(data);
-  response = $('td:contains("Real Matches")', response);
+  response = $('td:contains("Stats Recorded")', response);
+  console.log(response);
   var numGames = response.siblings()[0].firstChild.textContent;
   var winRate = response.siblings()[1].firstChild.textContent;
   $('#steamName').text(localStorage.getItem('steamName'));
