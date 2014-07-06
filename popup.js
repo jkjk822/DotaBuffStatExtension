@@ -1,3 +1,5 @@
+var verbose = false;
+
 //Clear storage and refresh
 function hardRefresh(){
   localStorage.clear();
@@ -9,22 +11,38 @@ function fetchStats(webpage){
   $.get(webpage, function(d){
     reqListener(d);
   });
-  console.log(webpage);
+  if(verbose)
+  	console.log(webpage);
 }
 //Retrieve data from dotabuff page
 function reqListener(data){
   var response = $('<stats />').html(data);
-  response = $('td:contains("Stats Recorded")', response);
-  console.log(response);
-  var numGames = response.siblings()[0].firstChild.textContent;
-  var winRate = response.siblings()[1].firstChild.textContent;
+  var wins = parseInt($('span.wins', response).text().replace(/,/g, ''));
+  if(isNaN(wins))
+  	wins = 0;
+  var losses = parseInt($('span.losses', response).text().replace(/,/g, ''));
+  if(isNaN(losses))
+  	losses = 0;
+  var abandons = parseInt($('span.abandons', response).text().replace(/,/g, ''));
+  if(isNaN(abandons))
+  	abandons = 0;
+  var winRate = $('dt:contains("Win Rate")', response);
+  if(winRate.length === 0)
+  	winRate = "0%"
+  else
+  	winRate = winRate.siblings()[0].innerHTML;
+  if(verbose){
+  	console.log(wins);
+  	console.log(losses);
+  	console.log(abandons);
+  	console.log(winRate);
+  }
   $('#steamName').text(localStorage.getItem('steamName'));
-  $('#numGames').text(numGames);
+  $('#numGames').text(wins+losses+abandons);
   $('#winRate').text(winRate);
   $('#gamesLabel').text("games");
   $('#winsLabel').text("winrate");
-  $('#searchPage').remove();
-  //document.body.removeChild(document.getElementById('searchPage'));
+  $('#searchPage').remove(); //document.body.removeChild(document.getElementById('searchPage'));
   $('#backButton').show();
   $('#overlay').focus(); //deletes extraneous scrollbar
   localStorage.setItem('numGames', numGames);
@@ -33,15 +51,19 @@ function reqListener(data){
 //Search for player on dotabuff
 function search(){
   var query = $('#userInput').val();
-  console.log(query);
+  if(verbose)
+  	console.log(query);
   $.get("http://dotabuff.com/search?utf8=%E2%9C%93&q=" + query, function(d){
     var response = $('<results />').html(d);
     var title = $('title', response)[0].innerHTML;
-    if(title.slice(26) === "") //Unexpected page
+    title = title.slice(26);
+    if(verbose)
+    console.log(title);
+    if(title === "") //Unexpected page
       return;
-    if(title.slice(26) !== "Search Results"){ //If only one result of search
+    if(title !== "Search Results"){ //If only one result of search
       var userPage = "http://dotabuff.com/search?utf8=%E2%9C%93&q=" + query;
-      localStorage.setItem('steamName', title.slice(26));
+      localStorage.setItem('steamName', title.slice(0, title.lastIndexOf('-')-1));
       localStorage.setItem('statsPage', userPage);
       fetchStats(userPage);
       return;
@@ -53,7 +75,8 @@ function search(){
 
     //Display results
     for(var i = 0; i<players.length; i++){
-      console.log(players[i]);
+    	if(verbose)
+    		console.log(players[i]);
 
       $('a[href]', players[i]).contents().unwrap();
       var extra = players[i].children[2];
