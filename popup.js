@@ -1,4 +1,13 @@
-var verbose = false;
+//TODO:
+//Make user findable by end of dotabuff webpage (http://www.dotabuff.com/players/EXAMPLEVALUE)
+//Update to use "font-awesome" checkmark (this is what actual dotabuff uses)
+//Find a better way to change background/bind overlay height than JQuery commands
+//Find a way to center input form with padding hacks
+//Find a better way to reset than "hardRefresh"
+
+
+var verbose = true; //Log events
+
 
 //Clear storage and refresh
 function hardRefresh(){
@@ -11,26 +20,23 @@ function fetchStats(webpage){
   $.get(webpage, function(d){
     reqListener(d);
   });
-  if(verbose)
-  	console.log(webpage);
+  if(verbose){
+    console.log(webpage);
+  }
 }
 //Retrieve data from dotabuff page
 function reqListener(data){
   var response = $('<stats />').html(data);
+  //Retrieve wins, losses, and abandons. Set to 0 if NaN is found
   var wins = parseInt($('span.wins', response).text().replace(/,/g, ''));
-  if(isNaN(wins))
-  	wins = 0;
+  wins = isNaN(wins)?0:wins;
   var losses = parseInt($('span.losses', response).text().replace(/,/g, ''));
-  if(isNaN(losses))
-  	losses = 0;
+  losses = isNaN(losses)?0:losses;
   var abandons = parseInt($('span.abandons', response).text().replace(/,/g, ''));
-  if(isNaN(abandons))
-  	abandons = 0;
+  abandons = isNaN(abandons)?0:abandons;
   var winRate = $('dt:contains("Win Rate")', response);
-  if(winRate.length === 0)
-  	winRate = "0%"
-  else
-  	winRate = winRate.siblings()[0].innerHTML;
+  //Win rate not available, set to 0%
+  winRate = (winRate.length === 0)?"0%":winRate.siblings()[0].innerHTML;
   if(verbose){
   	console.log(wins);
   	console.log(losses);
@@ -42,28 +48,37 @@ function reqListener(data){
   $('#winRate').text(winRate);
   $('#gamesLabel').text("games");
   $('#winsLabel').text("winrate");
-  $('#searchPage').remove(); //document.body.removeChild(document.getElementById('searchPage'));
+  $('#searchPage').remove();
   $('#backButton').show();
   $('#overlay').focus(); //deletes extraneous scrollbar
-  localStorage.setItem('numGames', numGames);
+  $('#overlay').height("100%"); //Set overlay to proper height
+
+  //Change background back to normal view
+  $('body').css('background-image','url(background.jpg)');
+  $('body').css('background-size','cover');
+  localStorage.setItem('numGames', wins+losses+abandons);
   localStorage.setItem('winRate', winRate);
 }
 //Search for player on dotabuff
 function search(){
   var query = $('#userInput').val();
-  if(verbose)
+  if(verbose){
   	console.log(query);
-  $.get("http://dotabuff.com/search?utf8=%E2%9C%93&q=" + query, function(d){
+  }
+  $.get("http://www.dotabuff.com/search?utf8=%E2%9C%93&q=" + query, function(d){
     var response = $('<results />').html(d);
     var title = $('title', response)[0].innerHTML;
-    title = title.slice(26);
-    if(verbose)
-    console.log(title);
-    if(title === "") //Unexpected page
+    title = title.slice(0, title.indexOf(":"));
+    if(verbose){
+      console.log(title);
+    }
+    if(title === ""){ //Unexpected page
       return;
+    }
     if(title !== "Search Results"){ //If only one result of search
+      title = title.slice(0, title.indexOf("-")-1); //Cut off remainder
       var userPage = "http://dotabuff.com/search?utf8=%E2%9C%93&q=" + query;
-      localStorage.setItem('steamName', title.slice(0, title.lastIndexOf('-')-1));
+      localStorage.setItem('steamName', title);
       localStorage.setItem('statsPage', userPage);
       fetchStats(userPage);
       return;
@@ -75,35 +90,49 @@ function search(){
 
     //Display results
     for(var i = 0; i<players.length; i++){
-    	if(verbose)
-    		console.log(players[i]);
+    	if(verbose){
+        console.log(players[i]);
+      }
 
-      $('a[href]', players[i]).contents().unwrap();
-      var extra = players[i].children[2];
-      extra.removeChild(extra.firstChild);
+      $('a[href]', players[i]).contents().unwrap(); //remove html "<a href='x'></a>" tags
+      var extra = players[i].children[2]; //Get extra details (steamID and last played)
+      extra.removeChild(extra.firstChild); //Delete steam ID
 
-      var lastPlayed = $('time[datetime]', players[i]).attr('datetime');
+      var lastPlayed = $('time[datetime]', players[i]).attr('datetime'); //Get UTC time
       if(lastPlayed){ //Has played at some point
-        lastPlayed = moment(lastPlayed).fromNow();
+        lastPlayed = moment(lastPlayed).fromNow(); //Convert to "Played X min/hour ago"
         extra.firstChild.children[0].innerHTML = lastPlayed;
       }
-      searchPage.append($(players[i]));
+      searchPage.append($(players[i])); //Add edited player div to popup page
     }
+    if(players.length > 0){ //Change background to tiled view
+      $('body').css('background-image','url(background-tiled.jpg)');
+      $('body').css('background-size','200%');
+    }
+    else{ //Change background to normal view
+      $('body').css('background-image','url(background.jpg)');
+      $('body').css('background-size','cover');
+    }
+
+    $('#overlay').height($('html').height()); //Set overlay to proper height
     $('#overlay').focus(); //deletes extraneous scrollbar
     $('#userInput').focus(); //shift focus back for typing
 
     //When user selects a player
     $('.player').click(function(){
       var userPage = dotaBuff+$(this).attr('data-link-to');
-      localStorage.setItem('steamName', this.children[1].innerHTML);
+      localStorage.setItem('steamName', $('div.name', this)[0].textContent);
       localStorage.setItem('statsPage', userPage);
       fetchStats(userPage);
     });
   });
 }
+
+
+//Main Function
+
 //If data is cached
 var dotaBuff = "http://dotabuff.com";
-$('#backButton').hide();
 if(localStorage.getItem('statsPage') != null){
   $('#searchPage').remove();
   $('#steamName').text(localStorage.getItem('steamName'));
@@ -111,15 +140,17 @@ if(localStorage.getItem('statsPage') != null){
   $('#winRate').text(localStorage.getItem('winRate'));
   $('#gamesLabel').text("games");
   $('#winsLabel').text("winrate");
-  $('#backButton').show();
   fetchStats(localStorage.getItem('statsPage'));
+}
+else{
+  $('#backButton').hide();
 }
 //Search for something else
 $('#backButton').click(function(){
   $('#statsPage').remove();
   hardRefresh();
 });
-//Get dotabuff page
+//Go to actual dotabuff page
 $('#steamName').click(function(){
   window.open(localStorage.getItem('statsPage'));
 });
