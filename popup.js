@@ -76,13 +76,14 @@ function search(){
       return;
     }
     if(title.slice(0,14) !== "Search Results"){ //If only one result of search
-      console.log(title.slice(0,14)); //debug
       title = title.slice(0,title.indexOf("-"));
+      if(verbose){
+        console.log(title);
+      }
       var userPage = "http://dotabuff.com/search?utf8=%E2%9C%93&q=" + query;
       localStorage.setItem('steamName', title);
       localStorage.setItem('statsPage', userPage);
       fetchStats(userPage);
-      console.log(title); //debug
       return;
     }
     var players = $('.result.result-player', response);
