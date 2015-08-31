@@ -4,9 +4,6 @@
     <link href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900' rel='stylesheet' type='text/css'>
     <title>title</title>
     <style>
-      a{
-        padding-bottom: 15px;
-      }
       body {
         background-image: url('background.jpg');
         background-position: center;
@@ -34,28 +31,28 @@
         padding-top: 13px;
         padding-bottom: 16px;
       }
-      .fa-verified:before{
-        content: "\ \2714"; /*Use "\f00c" from font-awesome if you can ever get it to work...*/
+      .fa-check:before{
+        content: "\ \2714"; /*Use "\f00c" from font-awesome library if you can ever get it to work...*/
         color: #68d1f6;
       }
       .image-container-avatar>img{
         height: 46px;
         width: 46px;
       }
-      .player{
+      .result-player{
         padding-bottom: 5px;
         height: 46px;
         /*background-color: rgba(58, 141, 148, .3);*/
       }
-      .player:hover{
+      .result-player:hover{
         cursor: pointer;
         background-color: rgba(58, 141, 148, .4);
       }
-      .player>.avatar{
+      .result-player>.inner>.avatar{
         float: left;
         margin-right: 5px;
       }
-      .player>.extra, .player>.name{
+      .result-player>.inner>.identity{
         padding-right: 51px;
       }
       #backButton{

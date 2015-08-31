@@ -1,20 +1,17 @@
 //TODO:
-//Make user findable by end of dotabuff webpage (http://www.dotabuff.com/players/EXAMPLEVALUE)
+//Make user searchable by end of dotabuff webpage (http://www.dotabuff.com/players/EXAMPLEVALUE)
 //Update to use "font-awesome" checkmark (this is what actual dotabuff uses)
-//Find a better way to change background/bind overlay height than JQuery commands
-//Find a way to center input form with padding hacks
-//Find a better way to reset than "hardRefresh"
+//Find a better way to change background/bind overlay height than JQuery commands (position: fixed)
+//Find a way to center input form without padding hacks
+//DONE //Find a better way to reset than "hardRefresh"
 
+
+/*******************************NOTE*******************************/
+//Single quotes ('') mark element keywords (divs/names/ids/classes/etc.)
+//Double quotes ("") mark a string that has no symbollic significance
 
 var verbose = true; //Log events
 
-
-//Clear storage and refresh
-function hardRefresh(){
-  localStorage.clear();
-  document.location.reload(true);
-  document.location.reload(false);
-}
 //Request data from webpage
 function fetchStats(webpage){
   $.get(webpage, function(d){
@@ -48,10 +45,13 @@ function reqListener(data){
   $('#winRate').text(winRate);
   $('#gamesLabel').text("games");
   $('#winsLabel').text("winrate");
-  $('#searchPage').remove();
+  $('#searchPage').hide();
+  $('#statsPage').show();
+  $('.record.player').remove(); //Remove results from search page
+  $('#userInput').val("");
   $('#backButton').show();
+  $('#overlay').css('height', '100%'); //Reset height
   $('#overlay').focus(); //deletes extraneous scrollbar
-  $('#overlay').height("100%"); //Set overlay to proper height
 
   //Change background back to normal view
   $('body').css('background-image','url(background.jpg)');
@@ -61,6 +61,7 @@ function reqListener(data){
 }
 //Search for player on dotabuff
 function search(){
+
   var query = $('#userInput').val();
   if(verbose){
   	console.log(query);
@@ -68,25 +69,25 @@ function search(){
   $.get("http://www.dotabuff.com/search?utf8=%E2%9C%93&q=" + query, function(d){
     var response = $('<results />').html(d);
     var title = $('title', response)[0].innerHTML;
-    title = title.slice(0, title.indexOf(":"));
     if(verbose){
       console.log(title);
     }
     if(title === ""){ //Unexpected page
       return;
     }
-    if(title !== "Search Results"){ //If only one result of search
-      title = title.slice(0, title.indexOf("-")-1); //Cut off remainder
+    if(title.slice(0,14) !== "Search Results"){ //If only one result of search
+      console.log(title.slice(0,14)); //debug
+      title = title.slice(0,title.indexOf("-"));
       var userPage = "http://dotabuff.com/search?utf8=%E2%9C%93&q=" + query;
       localStorage.setItem('steamName', title);
       localStorage.setItem('statsPage', userPage);
       fetchStats(userPage);
+      console.log(title); //debug
       return;
     }
-    var players = $('.record.player', response);
+    var players = $('.result.result-player', response);
     var searchPage = $('#searchPage');
-    var oldResults = $('.record.player');
-    oldResults.remove();
+    $('.result.result-player').remove(); //Remove old results
 
     //Display results
     for(var i = 0; i<players.length; i++){
@@ -94,14 +95,12 @@ function search(){
         console.log(players[i]);
       }
 
-      $('a[href]', players[i]).contents().unwrap(); //remove html "<a href='x'></a>" tags
-      var extra = players[i].children[2]; //Get extra details (steamID and last played)
-      extra.removeChild(extra.firstChild); //Delete steam ID
+      $('a[href]', players[i]).contents().unwrap(); //allow images to be formatted
 
       var lastPlayed = $('time[datetime]', players[i]).attr('datetime'); //Get UTC time
       if(lastPlayed){ //Has played at some point
         lastPlayed = moment(lastPlayed).fromNow(); //Convert to "Played X min/hour ago"
-        extra.firstChild.children[0].innerHTML = lastPlayed;
+        $('time',players[i])[0].innerHTML = lastPlayed; //Set field
       }
       searchPage.append($(players[i])); //Add edited player div to popup page
     }
@@ -114,14 +113,14 @@ function search(){
       $('body').css('background-size','cover');
     }
 
-    $('#overlay').height($('html').height()); //Set overlay to proper height
+    $('#overlay').height($('html').height()); //Stretch to cover all
     $('#overlay').focus(); //deletes extraneous scrollbar
     $('#userInput').focus(); //shift focus back for typing
 
     //When user selects a player
-    $('.player').click(function(){
-      var userPage = dotaBuff+$(this).attr('data-link-to');
-      localStorage.setItem('steamName', $('div.name', this)[0].textContent);
+    $('.result-player').click(function(){
+      var userPage = "http://dotabuff.com"+$('.inner').attr('data-link-to');
+      localStorage.setItem('steamName', $('div.identity>.head', this)[0].textContent);
       localStorage.setItem('statsPage', userPage);
       fetchStats(userPage);
     });
@@ -132,9 +131,8 @@ function search(){
 //Main Function
 
 //If data is cached
-var dotaBuff = "http://dotabuff.com";
 if(localStorage.getItem('statsPage') != null){
-  $('#searchPage').remove();
+  $('#searchPage').hide();
   $('#steamName').text(localStorage.getItem('steamName'));
   $('#numGames').text(localStorage.getItem('numGames'));
   $('#winRate').text(localStorage.getItem('winRate'));
@@ -147,23 +145,28 @@ else{
 }
 //Search for something else
 $('#backButton').click(function(){
-  $('#statsPage').remove();
-  hardRefresh();
+  $('#statsPage').hide();
+  $('#searchPage').show();
+  localStorage.clear();
 });
 //Go to actual dotabuff page
 $('#steamName').click(function(){
   window.open(localStorage.getItem('statsPage'));
 });
 
-//Live search, waits 300ms before searching
-//to make sure user is done typing
+/****************************
+**Does live search**
+*  Waits 300ms before searching to make sure
+*  user is done typing
+*****************************/
 var timer = 0;
 $('#userInput').keyup(function(e){
   if(timer){
     clearTimeout(timer);
   }
   timer = setTimeout(function(){
-    search()
+    search();
+    console.timeEnd("Keyup");
   }, 300);
 });
 //When extension loads
