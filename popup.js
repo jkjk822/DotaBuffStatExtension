@@ -148,6 +148,10 @@ else{
 $('#backButton').click(function(){
   $('#statsPage').hide();
   $('#searchPage').show();
+  if($('.result.result-player').length > 0){ //change to correct background if needed
+    $('body').css('background-image','url(background-tiled.jpg)');
+    $('body').css('background-size','200%');
+  }
   localStorage.clear();
 });
 //Go to actual dotabuff page

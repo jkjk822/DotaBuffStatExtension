@@ -1,0 +1,78 @@
+/*
+* Style sheet for the popup
+*/
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
+body {
+  background-image: url('background.jpg');
+  background-position: center;
+  background-size: cover;
+  border-radius: 5px;
+  min-width: 139px;
+  min-height: 50px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: medium;
+  /*font-family: "Trebuchet MS";*/
+  font-size: 13pt;
+  color: white;
+  white-space: nowrap;
+}
+input{
+  text-align: center;
+  font-size: 10pt;
+  color: white;
+  background-color: rgba(58, 141, 148, .3);
+  border: 0px;
+  border-radius: 4px;
+  width: 98.5%;
+}
+#inputForm{
+  padding-top: 13px;
+  padding-bottom: 16px;
+}
+.fa-check:before{
+  content: "\ \2714"; /*Use "\f00c" from font-awesome library if you can ever get it to work...*/
+  color: #68d1f6;
+}
+.image-container-avatar>img{
+  height: 46px;
+  width: 46px;
+}
+.result-player{
+  padding: 4px;
+}
+.result-player>.inner{
+  padding: 4px;
+  height: 46px;
+  /*background-color: rgba(192, 192, 192, .3);*/
+  background-color: rgba(100,100,100,.4);
+}
+.result-player>.inner:hover{
+  cursor: pointer;
+  background-color: rgba(58, 141, 148, .4);
+}
+.result-player>.inner>.avatar{
+  float: left;
+  margin-right: 5px;
+}
+.result-player>.inner>.identity{
+  padding-right: 51px;
+}
+#backButton{
+  background-color: rgba(24, 123, 150, .7);
+  border: 0px;
+  color: white;
+  cursor: pointer;
+  border-radius: 7px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+#steamName:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+#statsPage{
+  text-align: center;
+}
+/*#searchPage{
+  vertical-align: center;
+}*/
