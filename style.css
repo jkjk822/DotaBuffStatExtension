@@ -2,6 +2,7 @@
 * Style sheet for the popup
 */
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
+
 body {
   background-image: url('background.jpg');
   background-position: center;
@@ -16,7 +17,15 @@ body {
   color: white;
   white-space: nowrap;
 }
-input{
+
+/*
+* Search page
+*/
+#inputForm{
+  padding-top: 13px;
+  padding-bottom: 16px;
+}
+#userInput{
   text-align: center;
   font-size: 10pt;
   color: white;
@@ -25,18 +34,7 @@ input{
   border-radius: 4px;
   width: 98.5%;
 }
-#inputForm{
-  padding-top: 13px;
-  padding-bottom: 16px;
-}
-.fa-check:before{
-  content: "\ \2714"; /*Use "\f00c" from font-awesome library if you can ever get it to work...*/
-  color: #68d1f6;
-}
-.image-container-avatar>img{
-  height: 46px;
-  width: 46px;
-}
+
 .result-player{
   padding: 4px;
 }
@@ -54,8 +52,31 @@ input{
   float: left;
   margin-right: 5px;
 }
+.image-container-avatar>img{
+  height: 46px;
+  width: 46px;
+}
 .result-player>.inner>.identity{
   padding-right: 51px;
+}
+.fa-check:before{
+  content: "\ \2714"; /*Use "\f00c" from font-awesome library if you can ever get it to work...*/
+  color: #68d1f6;
+}
+
+
+/*
+* Stats page
+*/
+#statsPage{
+  text-align: center;
+  padding-top: 10px;
+  margin-top: -10px;
+  background-color: rgba(0, 0, 0, .3);
+}
+#steamName:hover{
+  cursor: pointer;
+  text-decoration: underline;
 }
 #backButton{
   background-color: rgba(24, 123, 150, .7);
@@ -66,13 +87,3 @@ input{
   padding-right: 10px;
   padding-left: 10px;
 }
-#steamName:hover{
-  cursor: pointer;
-  text-decoration: underline;
-}
-#statsPage{
-  text-align: center;
-}
-/*#searchPage{
-  vertical-align: center;
-}*/

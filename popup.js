@@ -3,6 +3,7 @@
 //Update to use "font-awesome" checkmark (this is what actual dotabuff uses)
 //Find a better way to change background/bind overlay height than JQuery commands (position: fixed)
 //Find a way to center input form without padding hacks
+//Change from a single page to multiple pages
 //DONE //Find a better way to reset than "hardRefresh"
 
 
@@ -21,9 +22,11 @@ function fetchStats(webpage){
     console.log(webpage);
   }
 }
+
 //Retrieve data from dotabuff page
 function reqListener(data){
   var response = $('<stats />').html(data);
+
   //Retrieve wins, losses, and abandons. Set to 0 if NaN is found
   var wins = parseInt($('span.wins', response).text().replace(/,/g, ''));
   wins = isNaN(wins)?0:wins;
@@ -32,8 +35,10 @@ function reqListener(data){
   var abandons = parseInt($('span.abandons', response).text().replace(/,/g, ''));
   abandons = isNaN(abandons)?0:abandons;
   var winRate = $('dt:contains("Win Rate")', response);
+
   //Win rate not available, set to 0%
   winRate = (winRate.length === 0)?"0%":winRate.siblings()[0].innerHTML;
+
   if(verbose){
   	console.log(wins);
   	console.log(losses);
@@ -49,16 +54,17 @@ function reqListener(data){
   $('#statsPage').show();
   $('.record.player').remove(); //Remove results from search page
   $('#userInput').val("");
-  $('#backButton').show();
   $('#overlay').css('height', '100%'); //Reset height
   $('#overlay').focus(); //deletes extraneous scrollbar
 
   //Change background back to normal view
   $('body').css('background-image','url(background.jpg)');
   $('body').css('background-size','cover');
+
   localStorage.setItem('numGames', wins+losses+abandons);
   localStorage.setItem('winRate', winRate);
 }
+
 //Search for player on dotabuff
 function search(){
 
@@ -142,9 +148,10 @@ if(localStorage.getItem('statsPage') != null){
   fetchStats(localStorage.getItem('statsPage'));
 }
 else{
-  $('#backButton').hide();
+  $('#statsPage').hide();
 }
-//Search for something else
+
+//Back to search page
 $('#backButton').click(function(){
   $('#statsPage').hide();
   $('#searchPage').show();
@@ -154,16 +161,17 @@ $('#backButton').click(function(){
   }
   localStorage.clear();
 });
+
 //Go to actual dotabuff page
 $('#steamName').click(function(){
   window.open(localStorage.getItem('statsPage'));
 });
 
-/****************************
-**Does live search**
+/*
+*Does live search
 *  Waits 300ms before searching to make sure
 *  user is done typing
-*****************************/
+*/
 var timer = 0;
 $('#userInput').keyup(function(e){
   if(timer){
@@ -174,6 +182,7 @@ $('#userInput').keyup(function(e){
     console.timeEnd("Keyup");
   }, 300);
 });
+
 //When extension loads
 $(document).ready(function(){
   $('#userInput').focus();
