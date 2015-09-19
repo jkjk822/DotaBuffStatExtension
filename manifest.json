@@ -3,7 +3,7 @@
 
   "name": "Dota 2 Stats",
   "description": "Track your DotA 2 stats in a convenient popup.",
-  "version": "1.0.0",
+  "version": "1.0.1",
 
 "icons": { "16": "icon_16.png",
            "48": "icon_48.png",
