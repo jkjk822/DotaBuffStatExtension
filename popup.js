@@ -11,7 +11,7 @@
 //Single quotes ('') mark element keywords (divs/names/ids/classes/etc.)
 //Double quotes ("") mark a string that has no symbollic significance
 
-var verbose = true; //Log events
+var verbose = false; //Log events
 
 //Request data from webpage
 function fetchStats(webpage){
@@ -126,7 +126,7 @@ function search(){
 
     //When user selects a player
     $('.result-player').click(function(){
-      var userPage = "http://dotabuff.com"+$('.inner').attr('data-link-to');
+      var userPage = "http://dotabuff.com"+$('.inner',this).attr('data-link-to');
       localStorage.setItem('steamName', $('div.identity>.head', this)[0].textContent);
       localStorage.setItem('statsPage', userPage);
       fetchStats(userPage);
