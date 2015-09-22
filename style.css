@@ -2,6 +2,7 @@
 * Style sheet for the popup
 */
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900);
+@import url(https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css);
 
 body {
   background-image: url('background.jpg');
@@ -48,7 +49,7 @@ body {
   cursor: pointer;
   background-color: rgba(58, 141, 148, .4);
 }
-.result-player>.inner>.avatar{
+.result-player .avatar{
   float: left;
   margin-right: 5px;
 }
@@ -56,11 +57,11 @@ body {
   height: 46px;
   width: 46px;
 }
-.result-player>.inner>.identity{
+.result-player .identity{
   padding-right: 51px;
 }
 .fa-check:before{
-  content: "\ \2714"; /*Use "\f00c" from font-awesome library if you can ever get it to work...*/
+  content: "\ \f00c";
   color: #68d1f6;
 }
 

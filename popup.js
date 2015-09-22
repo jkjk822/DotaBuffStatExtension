@@ -1,10 +1,7 @@
 //TODO:
 //Make user searchable by end of dotabuff webpage (http://www.dotabuff.com/players/EXAMPLEVALUE)
-//Update to use "font-awesome" checkmark (this is what actual dotabuff uses)
-//Find a better way to change background/bind overlay height than JQuery commands (position: fixed)
 //Find a way to center input form without padding hacks
 //Change from a single page to multiple pages
-//DONE //Find a better way to reset than "hardRefresh"
 
 
 /*******************************NOTE*******************************/
