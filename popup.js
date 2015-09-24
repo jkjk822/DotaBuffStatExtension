@@ -2,6 +2,8 @@
 //Make user searchable by end of dotabuff webpage (http://www.dotabuff.com/players/EXAMPLEVALUE)
 //Find a way to center input form without padding hacks
 //Change from a single page to multiple pages
+//Run script from event page (or background page?)
+//Internationalize app (use various languages from dotabuff)
 
 
 /*******************************NOTE*******************************/
